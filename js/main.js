@@ -1,13 +1,20 @@
 'use strict';
 
-var NUMBEROFADS = 8;
+var NUMBER_OF_ADS = 8;
 var BOOKING_TYPES = ['flat', 'house', 'bungalo', 'palace'];
 var BOOKING_CHECKINS = ['12:00', '13:00', '14:00'];
 var BOOKING_CHECKOUTS = ['12:00', '13:00', '14:00'];
 var BOOKING_FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 var BOOKING_DESCRIPTION = ['прекрасный вид на море', 'бассейн', 'все включено', 'гости оценили завтраки', 'близко к морю', 'семейный отдых', 'выбор клиентов', 'лучшая цена', 'ранее бронирование'];
-var PINWITH = 50;
-var PINHEIGHT = 70;
+var BOOKING_PHOTOS = [
+  'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
+  'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
+  'http://o0.github.io/assets/images/tokyo/hotel3.jpg',
+  'http://o0.github.io/assets/images/tokyo/hotel4.jpg',
+  'http://o0.github.io/assets/images/tokyo/hotel5.jpg'
+];
+var PIN_WIDTH = 50;
+var PIN_HEIGHT = 70;
 var BOOKING_PRICE = {
   min: 1,
   max: 12000
@@ -33,103 +40,95 @@ var PIN_COORDS = {
 var map = document.querySelector('.map');
 var mapPin = document.querySelector('.map__pins');
 // var popupTemplate = document.querySelector('#card').content.querySelector('.map__card');
-var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
 // var popupElement = popupTemplate.cloneNode(true);
 
-var getRandomNumber = function (min, max) {
+var getRandomNumberInRange = function (min, max) {
   return Math.floor(min + Math.random() * (max - min));
 };
 
-var getRandomItem = function (randomArray) {
-  return randomArray[getRandomNumber(0, randomArray.length)];
+var getRandomItem = function (array) {
+  return array[getRandomNumberInRange(0, array.length)];
 };
 
-var getRandomElements = function (array, count) {
-  count = array.length;
-  var randomCount = getRandomNumber(1, count + 1);
-  var shuffled = array.slice(0);
-  var i = array.length;
-  var min = i - randomCount;
-  var temp;
-  var index;
-  while (i-- > min) {
-    index = Math.floor((i + 1) * Math.random());
-    temp = shuffled[index];
-    shuffled[index] = shuffled[i];
-    shuffled[i] = temp;
+var getShuffledArray = function (array) {
+  var currentIndex = array.length;
+  var temporaryValue;
+  var randomIndex;
+  var startingIndex = 0;
+  while (startingIndex !== currentIndex) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
   }
-  return shuffled.slice(min);
+  return array;
 };
 
-var calculatePinX = function (cordsX) {
-  return cordsX - PINHEIGHT;
-};
-
-var calculatePinY = function (cordsY) {
-  return cordsY - PINWITH / 2;
+var getArrayWithRandomLength = function (array) {
+  return getShuffledArray(array).slice(0, getRandomNumberInRange(1, array.length));
 };
 
 var removeClass = function (element, className) {
   return element.classList.remove(className);
 };
 
-var pageInitialization = function () {
+var drawPage = function () {
   removeClass(map, 'map--faded');
 };
-pageInitialization();
 
-var generateAd = function (j) {
-  var cordsX = calculatePinX(getRandomNumber(PIN_COORDS.xCord.min, PIN_COORDS.xCord.max));
-  var cordsY = calculatePinY(getRandomNumber(PIN_COORDS.yCord.min, PIN_COORDS.yCord.max));
-  var nearestAds = {
+var generateAd = function (authorNumber) {
+  var cordsX = getRandomNumberInRange(PIN_COORDS.xCord.min, PIN_COORDS.xCord.max);
+  var cordsY = getRandomNumberInRange(PIN_COORDS.yCord.min, PIN_COORDS.yCord.max);
+  return {
     author: {
-      avatar: 'img/avatars/user0' + j + '.png'
+      avatar: 'img/avatars/user0' + authorNumber + '.png'
     },
     offer: {
       title: '',
       address: cordsX + ', ' + cordsY,
-      price: getRandomNumber(BOOKING_PRICE.min, BOOKING_PRICE.max),
+      price: getRandomNumberInRange(BOOKING_PRICE.min, BOOKING_PRICE.max),
       type: getRandomItem(BOOKING_TYPES),
-      rooms: getRandomNumber(BOOKING_ROOMS.min, BOOKING_ROOMS.max),
-      guests: getRandomNumber(BOOKING_GUESTS.min, BOOKING_GUESTS.max),
+      rooms: getRandomNumberInRange(BOOKING_ROOMS.min, BOOKING_ROOMS.max),
+      guests: getRandomNumberInRange(BOOKING_GUESTS.min, BOOKING_GUESTS.max),
       checkin: getRandomItem(BOOKING_CHECKINS),
       checkout: getRandomItem(BOOKING_CHECKOUTS),
-      features: getRandomElements(BOOKING_FEATURES),
-      description: getRandomElements(BOOKING_DESCRIPTION),
-      photos: []
+      features: getArrayWithRandomLength(BOOKING_FEATURES),
+      description: getArrayWithRandomLength(BOOKING_DESCRIPTION),
+      photos: getArrayWithRandomLength(BOOKING_PHOTOS)
     },
     location: {
       x: cordsX,
       y: cordsY
     }
   };
-  return nearestAds;
 };
 
 var generateAds = function (numberOfElements) {
-  var generatedArray = [];
+  var generatedItems = [];
   for (var i = 0; i < numberOfElements; i++) {
-    generatedArray.push(generateAd(i + 1));
+    generatedItems.push(generateAd(i + 1));
   }
-  return generatedArray;
+  return generatedItems;
 };
 
-var adsList = generateAds(NUMBEROFADS);
-
 var generatePin = function (ad) {
+  var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
   var pinElement = pinTemplate.cloneNode(true);
   pinElement.querySelector('img').src = ad.author.avatar;
-  pinElement.style.top = ad.location.y + 'px';
-  pinElement.style.left = ad.location.x + 'px';
+  pinElement.style.top = ad.location.y - PIN_HEIGHT + 'px';
+  pinElement.style.left = ad.location.x - (PIN_WIDTH / 2) + 'px';
   return pinElement;
 };
 
-var renderPins = function (newArray) {
+var renderPins = function (listOfItems) {
   var fragment = document.createDocumentFragment();
-  newArray.forEach(function (ad, number) {
-    fragment.appendChild(generatePin(ad, number));
+  listOfItems.forEach(function (ad) {
+    fragment.appendChild(generatePin(ad));
   });
   mapPin.appendChild(fragment);
 };
 
+var adsList = generateAds(NUMBER_OF_ADS);
+drawPage();
 renderPins(adsList);

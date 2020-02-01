@@ -128,6 +128,32 @@ var generateGalleryElements = function (array) {
   return cardGallery;
 };
 
+var normalizeEndings = function (number, forms) {
+  number = Number(number);
+  if (number % 100 === 11) {
+    return forms[0];
+  }
+  var remainder = number % 10;
+  switch (true) {
+    case remainder === 0 || remainder > 4:
+      return forms[0];
+    case remainder === 1:
+      return forms[1];
+    default:
+      return forms[2];
+  }
+};
+
+var normalizeRoomsEndings = function (number) {
+  var forms = ['комнат', 'комната', 'комнаты'];
+  return normalizeEndings(number, forms);
+};
+
+var normalizeGuestsEndings = function (number) {
+  var forms = ['гостей', 'гостя', 'гостей'];
+  return normalizeEndings(number, forms);
+};
+
 var generateAds = function (numberOfElements) {
   var generatedItems = [];
   for (var i = 0; i < numberOfElements; i++) {
@@ -152,7 +178,7 @@ var fillCard = function (cardItem) {
   cardElement.querySelector('.popup__text--address').textContent = cardItem.offer.address;
   cardElement.querySelector('.popup__text--price').innerHTML = cardItem.offer.price + ' &#x20bd;/ночь';
   cardElement.querySelector('.popup__type').textContent = ACCOMMODATION_TYPE[cardItem.offer.type];
-  cardElement.querySelector('.popup__text--capacity').textContent = cardItem.offer.rooms + ' комнаты для ' + cardItem.offer.guests + ' гостей';
+  cardElement.querySelector('.popup__text--capacity').textContent = cardItem.offer.rooms + ' ' + normalizeRoomsEndings(cardItem.offer.rooms) + ' для ' + cardItem.offer.guests + ' ' + normalizeGuestsEndings(cardItem.offer.guests);
   cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + cardItem.offer.checkin + ', выезд до ' + cardItem.offer.checkout;
   cardElement.querySelector('.popup__features').innerHTML = '';
   cardElement.querySelector('.popup__features').insertAdjacentHTML('beforeend', generateLabelledList(cardItem.offer.features));
@@ -170,15 +196,13 @@ var renderPins = function (elements) {
   mapPin.appendChild(fragment);
 };
 
-var renderCards = function (elements) {
+var renderCards = function (element) {
   var fragment = document.createDocumentFragment();
-  elements.forEach(function (card) {
-    fragment.appendChild(fillCard(card));
-  });
+  fragment.appendChild(fillCard(element));
   mapFilters.appendChild(fragment);
 };
 
 var adsList = generateAds(NUMBER_OF_ADS);
 drawPage();
 renderPins(adsList);
-renderCards(adsList);
+renderCards(adsList[0]);

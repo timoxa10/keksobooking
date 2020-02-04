@@ -19,6 +19,8 @@ var BOOKING_PHOTOS = [
 ];
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
+var MAIN_PIN_SIZE = 130;
+
 var BOOKING_PRICE = {
   min: 1,
   max: 12000
@@ -54,8 +56,26 @@ var HOUSING_PRICES = {
   palace: 10000
 };
 var ENTER_KEY = 'Enter';
+var LEFT_MOUSE_BUTTON_KEY = 0;
 var MIN_TITLE_LENGTH = 30;
-
+var roomsCapacityMap = {
+  '1': {
+    'guests': ['1'],
+    'errorText': '1 комната для 1 гостя'
+  },
+  '2': {
+    'guests': ['1', '2'],
+    'errorText': '2 комнаты для 1 или 2 гостей'
+  },
+  '3': {
+    'guests': ['1', '2', '3'],
+    'errorText': '3 комнаты для 1, 2 или 3 гостей'
+  },
+  '100': {
+    'guests': ['0'],
+    'errorText': '100 комнат не для гостей'
+  },
+};
 var map = document.querySelector('.map');
 var mapPin = map.querySelector('.map__pins');
 var mapPinMain = map.querySelector('.map__pin--main');
@@ -70,7 +90,7 @@ var pricePerNightField = adForm.querySelector('#price');
 var checkinField = adForm.querySelector('#timein');
 var checkoutField = adForm.querySelector('#timeout');
 var roomsField = adForm.querySelector('#room_number');
-var capacityField = adForm.querySelector('#capacity');
+// var capacityField = adForm.querySelector('#capacity');
 var typeOfHousingField = adForm.querySelector('#type');
 
 var getRandomNumberInRange = function (min, max) {
@@ -221,70 +241,71 @@ var renderCards = function (element) {
 
 var adsList = generateAds(NUMBER_OF_ADS);
 
-var mapPinMainMouseupHandler = function () {
-  removeClass(map, 'map--faded');
-  removeClass(adForm, 'ad-form--disabled');
-  renderPins(adsList);
-  renderCards(adsList[0]);
-  mapFiltersSelectLists.forEach(function (item) {
-    item.removeAttribute('disabled', '');
-  });
-  adFormFieldsets.forEach(function (item) {
-    item.removeAttribute('disabled', '');
-  });
-  capacityField.options[0].setAttribute('disabled', 'disabled');
-  capacityField.options[1].setAttribute('disabled', 'disabled');
-  capacityField.options[3].setAttribute('disabled', 'disabled');
-  mapFiltersFieldset.removeAttribute('disabled', '');
-  typeOfHousingFieldChangeHandler();
-  roomsFieldChangeHandler();
-  checkinField.addEventListener('change', checkinChangeHandler);
-  checkoutField.addEventListener('change', checkoutChangeHandler);
-};
-
-var setInactivePageState = function () {
-  mapFiltersSelectLists.forEach(function (item) {
+var setInactiveFieldsState = function (elements) {
+  return elements.forEach(function (item) {
     item.setAttribute('disabled', '');
   });
-  adFormFieldsets.forEach(function (item) {
-    item.setAttribute('disabled', '');
-  });
-  mapFiltersFieldset.setAttribute('disabled', '');
-  addressField.setAttribute('value', getOffset(mapPinMain).left + ', ' + getOffset(mapPinMain).top);
 };
 
-var getOffset = function (element) {
-  var rect = element.getBoundingClientRect();
+var setActiveFieldsState = function (elements) {
+  return elements.forEach(function (item) {
+    item.removeAttribute('disabled', '');
+  });
+};
+
+var getMapPinMainCoords = function (element) {
   return {
-    left: rect.left + window.scrollX,
-    top: rect.top + window.scrollY
+    left: Math.floor(parseInt(element.style.left, 10) + (MAIN_PIN_SIZE / 2)),
+    top: Math.floor(parseInt(element.style.top, 10) + (MAIN_PIN_SIZE / 2))
   };
 };
 
-pricePerNightField.addEventListener('invalid', function () {
-  if (pricePerNightField.validity.valueMissing) {
-    pricePerNightField.setCustomValidity('Обязательное поле');
-  } else {
-    pricePerNightField.setCustomValidity('');
-  }
-});
+var mapPinMainMouseupHandler = function () {
+  removeClass(map, 'map--faded');
+  removeClass(adForm, 'ad-form--disabled');
+  mapPinMain.addEventListener('mouseup', function (evt) {
+    if (evt.target.parentNode.matches('.map__pin--main')) {
+      renderPins(adsList);
+      renderCards(adsList[0]);
+    }
+  });
+  mapPinMain.addEventListener('mouseup', function () {
+    addressField.setAttribute('value', getMapPinMainCoords(mapPinMain).left + ', ' + getMapPinMainCoords(mapPinMain).top);
+  });
+  setActiveFieldsState(mapFiltersSelectLists);
+  setActiveFieldsState(adFormFieldsets);
+  mapFiltersFieldset.removeAttribute('disabled', '');
+  roomsField.addEventListener('change', validateRoomsNumbers);
+  checkinField.addEventListener('change', checkinChangeHandler);
+  checkoutField.addEventListener('change', checkoutChangeHandler);
+  typeOfHousingField.addEventListener('change', typeOfHousingFieldChangeHandler);
+};
 
-headlineField.addEventListener('invalid', function () {
-  if (headlineField.validity.valueMissing) {
-    headlineField.setCustomValidity('Обязательное поле');
-  } else {
-    headlineField.setCustomValidity('');
-  }
-});
+var setInactivePageState = function () {
+  setInactiveFieldsState(mapFiltersSelectLists);
+  setInactiveFieldsState(adFormFieldsets);
+  mapFiltersFieldset.setAttribute('disabled', '');
+  addressField.setAttribute('value', getMapPinMainCoords(mapPinMain).left + ', ' + getMapPinMainCoords(mapPinMain).top);
+};
 
-headlineField.addEventListener('input', function (evt) {
+var requiredFieldHandler = function (field) {
+  if (field.validity.valueMissing) {
+    field.setCustomValidity('Обязательное поле');
+  } else {
+    field.setCustomValidity('');
+  }
+};
+
+var headlineFieldInputHandler = function (evt) {
   var target = evt.target;
   if (target.value.length < MIN_TITLE_LENGTH) {
-    target.setCustomValidity('Имя должно состоять минимум из ' + MIN_TITLE_LENGTH + '-х символов');
+    target.setCustomValidity('Имя должно состоять минимум из ' + (MIN_TITLE_LENGTH - target.value.length) + '-х символов');
   } else {
     target.setCustomValidity('');
   }
-});
+};
+headlineField.addEventListener('invalid', requiredFieldHandler(headlineField));
+headlineField.addEventListener('input', headlineFieldInputHandler);
 
 var checkinChangeHandler = function (evt) {
   checkoutField.value = evt.target.value;
@@ -294,64 +315,33 @@ var checkoutChangeHandler = function (evt) {
   checkinField.value = evt.target.value;
 };
 
-var roomsFieldChangeHandler = function () {
-  roomsField.addEventListener('change', function (evt) {
-    var target = evt.target.value;
-    if (target === '1') {
-      capacityField.value = 1;
-      capacityField.options[2].removeAttribute('disabled', 'disabled');
-      capacityField.options[0].setAttribute('disabled', 'disabled');
-      capacityField.options[1].setAttribute('disabled', 'disabled');
-      capacityField.options[3].setAttribute('disabled', 'disabled');
-    } else if (target === '2') {
-      capacityField.value = 2;
-      capacityField.options[1].removeAttribute('disabled', 'disabled');
-      capacityField.options[0].setAttribute('disabled', 'disabled');
-      capacityField.options[2].setAttribute('disabled', 'disabled');
-      capacityField.options[3].setAttribute('disabled', 'disabled');
-    } else if (roomsField.value === '3') {
-      capacityField.value = 3;
-      capacityField.options[0].removeAttribute('disabled', 'disabled');
-      capacityField.options[1].setAttribute('disabled', 'disabled');
-      capacityField.options[2].setAttribute('disabled', 'disabled');
-      capacityField.options[3].setAttribute('disabled', 'disabled');
-    } else {
-      capacityField.value = 0;
-      capacityField.options[3].removeAttribute('disabled', 'disabled');
-      capacityField.options[0].setAttribute('disabled', 'disabled');
-      capacityField.options[1].setAttribute('disabled', 'disabled');
-      capacityField.options[2].setAttribute('disabled', 'disabled');
+var typeOfHousingFieldChangeHandler = function (evt) {
+  var target = evt.target.value;
+  pricePerNightField.setAttribute('min', HOUSING_PRICES[target]);
+  pricePerNightField.setAttribute('placeholder', HOUSING_PRICES[target]);
+};
+
+var validateRoomsNumbers = function () {
+  var roomsSelect = document.querySelector('[name="rooms"]');
+  var rooms = roomsSelect.value;
+  var guests = document.querySelector('[name="capacity"]').value;
+  roomsSelect.setCustomValidity(roomsCapacityMap[rooms].guests.includes(guests) ? '' : roomsCapacityMap[rooms].errorText);
+};
+
+var leftMouseButtonMouseupHandler = function () {
+  mapPinMain.addEventListener('mouseup', function (evt) {
+    if (evt.button === LEFT_MOUSE_BUTTON_KEY) {
+      mapPinMainMouseupHandler();
     }
   });
 };
 
-var typeOfHousingFieldChangeHandler = function () {
-  typeOfHousingField.addEventListener('change', function (evt) {
-    var target = evt.target.value;
-    if (target === 'bungalo') {
-      pricePerNightField.setAttribute('placeholder', HOUSING_PRICES.bungalo);
-      pricePerNightField.setAttribute('min', HOUSING_PRICES.bungalo);
-    } else if (target === 'flat') {
-      pricePerNightField.setAttribute('placeholder', HOUSING_PRICES.flat);
-      pricePerNightField.setAttribute('min', HOUSING_PRICES.flat);
-    } else if (target === 'house') {
-      pricePerNightField.setAttribute('placeholder', HOUSING_PRICES.house);
-      pricePerNightField.setAttribute('min', HOUSING_PRICES.house);
-    } else {
-      pricePerNightField.setAttribute('placeholder', HOUSING_PRICES.palace);
-      pricePerNightField.setAttribute('min', HOUSING_PRICES.palace);
-    }
-  });
-};
-
-setInactivePageState();
-
-mapPinMain.addEventListener('mouseup', function () {
-  mapPinMainMouseupHandler();
-});
-
-mapPinMain.addEventListener('keydown', function (evt) {
+var enterKeyPressHandler = function (evt) {
   if (evt.key === ENTER_KEY) {
     mapPinMainMouseupHandler();
   }
-});
+};
+
+leftMouseButtonMouseupHandler();
+setInactivePageState();
+document.addEventListener('keydown', enterKeyPressHandler);

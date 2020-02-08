@@ -295,6 +295,7 @@ var setActivePageState = function () {
   checkoutField.addEventListener('change', checkoutChangeHandler);
   typeOfHousingField.addEventListener('change', typeOfHousingFieldChangeHandler);
   mapPinMain.removeEventListener('keydown', enterKeydownHandler);
+  mapPinMain.removeEventListener('mousedown', mapPinMainMouseDownHandler);
 };
 
 var validateTitle = function () {
@@ -354,7 +355,6 @@ var checkoutChangeHandler = function (evt) {
 var mapPinMainMouseDownHandler = function (evt) {
   if (evt.button === LEFT_MOUSE_BUTTON_KEY) {
     setActivePageState();
-    mapPinMain.removeEventListener('mousedown', mapPinMainMouseDownHandler);
   }
 };
 

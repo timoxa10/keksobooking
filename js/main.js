@@ -62,6 +62,7 @@ var HOUSING_PRICES = {
 };
 
 var ENTER_KEY = 'Enter';
+var ESC_KEY = 'Escape';
 var LEFT_MOUSE_BUTTON_KEY = 0;
 var MIN_TITLE_LENGTH = 30;
 var roomsCapacityMap = {
@@ -83,7 +84,7 @@ var roomsCapacityMap = {
   },
 };
 var map = document.querySelector('.map');
-var mapPin = map.querySelector('.map__pins');
+var mapPinsContainer = map.querySelector('.map__pins');
 var mapPinMain = map.querySelector('.map__pin--main');
 var mapFilters = map.querySelector('.map__filters-container');
 var adForm = document.querySelector('.ad-form');
@@ -98,6 +99,9 @@ var checkoutField = adForm.querySelector('#timeout');
 var roomsField = adForm.querySelector('#room_number');
 var guestsField = adForm.querySelector('#capacity');
 var typeOfHousingField = adForm.querySelector('#type');
+var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
+var cardElement = cardTemplate.cloneNode(true);
+var cardButtonClose = cardElement.querySelector('.popup__close');
 
 var getRandomNumberInRange = function (min, max) {
   return Math.floor(min + Math.random() * (max - min));
@@ -124,6 +128,10 @@ var getShuffledArray = function (array) {
 
 var getArrayWithRandomLength = function (array) {
   return getShuffledArray(array).slice(0, getRandomNumberInRange(1, array.length));
+};
+
+var addClass = function (element, className) {
+  return element.classList.add(className);
 };
 
 var removeClass = function (element, className) {
@@ -205,18 +213,18 @@ var generateAds = function (numberOfElements) {
   return generatedItems;
 };
 
-var generatePin = function (ad) {
+var generatePin = function (ad, adId) {
   var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
   var pinElement = pinTemplate.cloneNode(true);
   pinElement.querySelector('img').src = ad.author.avatar;
   pinElement.style.top = ad.location.y - PIN_HEIGHT + 'px';
   pinElement.style.left = ad.location.x - (PIN_WIDTH / 2) + 'px';
+  pinElement.setAttribute('id', String(adId));
   return pinElement;
 };
 
 var fillCard = function (cardItem) {
-  var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
-  var cardElement = cardTemplate.cloneNode(true);
+  cardElement.querySelector('.popup__avatar').src = cardItem.author.avatar;
   cardElement.querySelector('.popup__title').textContent = cardItem.offer.title;
   cardElement.querySelector('.popup__text--address').textContent = cardItem.offer.address;
   cardElement.querySelector('.popup__text--price').innerHTML = cardItem.offer.price + ' &#x20bd;/ночь';
@@ -233,16 +241,10 @@ var fillCard = function (cardItem) {
 
 var renderPins = function (elements) {
   var fragment = document.createDocumentFragment();
-  elements.forEach(function (ad) {
-    fragment.appendChild(generatePin(ad));
+  elements.forEach(function (ad, adId) {
+    fragment.appendChild(generatePin(ad, adId));
   });
-  mapPin.appendChild(fragment);
-};
-
-var renderCards = function (element) {
-  var fragment = document.createDocumentFragment();
-  fragment.appendChild(fillCard(element));
-  mapFilters.appendChild(fragment);
+  mapPinsContainer.appendChild(fragment);
 };
 
 var adsList = generateAds(NUMBER_OF_ADS);
@@ -279,7 +281,6 @@ var setActivePageState = function () {
   removeClass(map, 'map--faded');
   removeClass(adForm, 'ad-form--disabled');
   renderPins(adsList);
-  renderCards(adsList[0]);
   setActiveFieldsState(mapFiltersSelectLists);
   setActiveFieldsState(adFormFieldsets);
   mapFiltersFieldset.removeAttribute('disabled', '');
@@ -296,6 +297,8 @@ var setActivePageState = function () {
   typeOfHousingField.addEventListener('change', typeOfHousingFieldChangeHandler);
   mapPinMain.removeEventListener('keydown', enterKeydownHandler);
   mapPinMain.removeEventListener('mousedown', mapPinMainMouseDownHandler);
+  mapPinsContainer.addEventListener('click', mapPinsContainerClickHandler);
+  mapPinsContainer.addEventListener('keydown', mapPinsContainerEnterHandler);
 };
 
 var validateTitle = function () {
@@ -374,3 +377,37 @@ var setInactivePageState = function () {
 mapPinMain.addEventListener('mousedown', mapPinMainMouseDownHandler);
 mapPinMain.addEventListener('keydown', enterKeydownHandler);
 setInactivePageState();
+
+var mapPinsContainerClickHandler = function (evt) {
+  var clickedPin = evt.target.parentNode;
+  if (clickedPin.hasAttribute('id')) {
+    renderCard(clickedPin);
+    removeClass(cardElement, 'hidden');
+  }
+};
+
+var renderCard = function (clickedPin) {
+  var fragment = document.createDocumentFragment();
+  var clickedId = parseInt(clickedPin.getAttribute('id'), 10);
+  fragment.appendChild(fillCard(adsList[clickedId]));
+  mapFilters.appendChild(fragment);
+};
+
+var cardButtonCloseClickHandler = function () {
+  addClass(cardElement, 'hidden');
+};
+
+var cardButtonEscapeHandler = function (evt) {
+  if (evt.key === ESC_KEY) {
+    cardButtonCloseClickHandler();
+  }
+};
+
+var mapPinsContainerEnterHandler = function (evt) {
+  if (evt.key === ENTER_KEY) {
+    mapPinsContainerClickHandler();
+  }
+};
+
+cardButtonClose.addEventListener('click', cardButtonCloseClickHandler);
+document.addEventListener('keydown', cardButtonEscapeHandler);

@@ -96,7 +96,7 @@ var pricePerNightField = adForm.querySelector('#price');
 var checkinField = adForm.querySelector('#timein');
 var checkoutField = adForm.querySelector('#timeout');
 var roomsField = adForm.querySelector('#room_number');
-// var capacityField = adForm.querySelector('#capacity');
+var guestsField = adForm.querySelector('#capacity');
 var typeOfHousingField = adForm.querySelector('#type');
 
 var getRandomNumberInRange = function (min, max) {
@@ -259,18 +259,20 @@ var setActiveFieldsState = function (elements) {
   });
 };
 
-var getMapPinMainDefaultCoords = function (element) {
-  return {
-    left: Math.floor(parseInt(element.style.left, 10) + (INACTIVE_MAIN_PIN_WIDTH / 2)),
-    top: Math.floor(parseInt(element.style.top, 10) + (INACTIVE_MAIN_PIN_HEIGHT / 2))
+var getMapPinMainDefaultCoords = function () {
+  var coordinates = {
+    left: Math.floor(parseInt(mapPinMain.style.left, 10) + (INACTIVE_MAIN_PIN_WIDTH / 2)),
+    top: Math.floor(parseInt(mapPinMain.style.top, 10) + (INACTIVE_MAIN_PIN_HEIGHT / 2))
   };
+  return addressField.setAttribute('value', coordinates.left + ', ' + coordinates.top);
 };
 
-var getMapPinMainActivatedCoords = function (element) {
-  return {
-    left: Math.floor(parseInt(element.style.left, 10) + (ACTIVE_MAIN_PIN_WIDTH / 2)),
-    top: Math.floor(parseInt(element.style.top, 10) + ACTIVE_MAIN_PIN_HEIGHT)
+var getMapPinMainActivatedCoords = function () {
+  var coordinates = {
+    left: Math.floor(parseInt(mapPinMain.style.left, 10) + (ACTIVE_MAIN_PIN_WIDTH / 2)),
+    top: Math.floor(parseInt(mapPinMain.style.top, 10) + ACTIVE_MAIN_PIN_HEIGHT)
   };
+  return addressField.setAttribute('value', coordinates.left + ', ' + coordinates.top);
 };
 
 var setActivePageState = function () {
@@ -281,23 +283,31 @@ var setActivePageState = function () {
   setActiveFieldsState(mapFiltersSelectLists);
   setActiveFieldsState(adFormFieldsets);
   mapFiltersFieldset.removeAttribute('disabled', '');
-  adForm.addEventListener('change', adFormChangeHandler);
+  getMapPinMainActivatedCoords();
+  validateTitle();
+  validatePrice();
+  validateRoomsNumbers();
   headlineField.addEventListener('input', headlineFieldInputHandler);
+  pricePerNightField.addEventListener('input', pricePerNightFieldInputHandler);
+  roomsField.addEventListener('change', roomsFieldChangeHandler);
+  guestsField.addEventListener('change', roomsFieldChangeHandler);
   checkinField.addEventListener('change', checkinChangeHandler);
   checkoutField.addEventListener('change', checkoutChangeHandler);
   typeOfHousingField.addEventListener('change', typeOfHousingFieldChangeHandler);
-  roomsField.addEventListener('change', validateRoomsNumbers);
-  mapPinMain.removeEventListener('mousedown', enterKeydownHandler);
-  mapPinMain.addEventListener('mousedown', addressFieldMouseDownHandler);
+  mapPinMain.removeEventListener('keydown', enterKeydownHandler);
 };
 
-var adFormChangeHandler = function () {
+var validateTitle = function () {
   if (headlineField.validity.valueMissing) {
     headlineField.setCustomValidity('Обязательное поле');
+  } else if (headlineField.value.length < MIN_TITLE_LENGTH) {
+    headlineField.setCustomValidity('Имя должно состоять минимум из ' + MIN_TITLE_LENGTH + ' символов');
   } else {
     headlineField.setCustomValidity('');
   }
+};
 
+var validatePrice = function () {
   if (pricePerNightField.validity.valueMissing) {
     pricePerNightField.setCustomValidity('Обязательное поле');
   } else if (pricePerNightField.validity.rangeUnderflow) {
@@ -309,24 +319,22 @@ var adFormChangeHandler = function () {
   }
 };
 
-var headlineFieldInputHandler = function (evt) {
-  var target = evt.target;
-  if (target.value.length < MIN_TITLE_LENGTH) {
-    target.setCustomValidity('Имя должно состоять минимум из ' + (MIN_TITLE_LENGTH - target.value.length) + ' символов');
-  } else {
-    target.setCustomValidity('');
-  }
+var validateRoomsNumbers = function () {
+  var rooms = roomsField.value;
+  var guests = guestsField.value;
+  roomsField.setCustomValidity(roomsCapacityMap[rooms].guests.includes(guests) ? '' : roomsCapacityMap[rooms].errorText);
 };
 
-var addressFieldMouseDownHandler = function () {
-  addressField.setAttribute('value', getMapPinMainActivatedCoords(mapPinMain).left + ', ' + getMapPinMainActivatedCoords(mapPinMain).top);
+var headlineFieldInputHandler = function () {
+  validateTitle();
 };
 
-var setInactivePageState = function () {
-  setInactiveFieldsState(mapFiltersSelectLists);
-  setInactiveFieldsState(adFormFieldsets);
-  mapFiltersFieldset.setAttribute('disabled', '');
-  addressField.setAttribute('value', getMapPinMainDefaultCoords(mapPinMain).left + ', ' + getMapPinMainDefaultCoords(mapPinMain).top);
+var pricePerNightFieldInputHandler = function () {
+  validatePrice();
+};
+
+var roomsFieldChangeHandler = function () {
+  validateRoomsNumbers();
 };
 
 var typeOfHousingFieldChangeHandler = function (evt) {
@@ -343,17 +351,10 @@ var checkoutChangeHandler = function (evt) {
   checkinField.value = evt.target.value;
 };
 
-var validateRoomsNumbers = function () {
-  var roomsSelect = document.querySelector('[name="rooms"]');
-  var rooms = roomsSelect.value;
-  var guests = document.querySelector('[name="capacity"]').value;
-  roomsSelect.setCustomValidity(roomsCapacityMap[rooms].guests.includes(guests) ? '' : roomsCapacityMap[rooms].errorText);
-};
-
-var mapPinMainMouseupHandler = function (evt) {
+var mapPinMainMouseDownHandler = function (evt) {
   if (evt.button === LEFT_MOUSE_BUTTON_KEY) {
     setActivePageState();
-    mapPinMain.removeEventListener('mousedown', mapPinMainMouseupHandler);
+    mapPinMain.removeEventListener('mousedown', mapPinMainMouseDownHandler);
   }
 };
 
@@ -363,6 +364,13 @@ var enterKeydownHandler = function (evt) {
   }
 };
 
-mapPinMain.addEventListener('mousedown', mapPinMainMouseupHandler);
+var setInactivePageState = function () {
+  setInactiveFieldsState(mapFiltersSelectLists);
+  setInactiveFieldsState(adFormFieldsets);
+  mapFiltersFieldset.setAttribute('disabled', '');
+  getMapPinMainDefaultCoords();
+};
+
+mapPinMain.addEventListener('mousedown', mapPinMainMouseDownHandler);
 mapPinMain.addEventListener('keydown', enterKeydownHandler);
 setInactivePageState();

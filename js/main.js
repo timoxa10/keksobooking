@@ -298,7 +298,7 @@ var setActivePageState = function () {
   mapPinMain.removeEventListener('keydown', enterKeydownHandler);
   mapPinMain.removeEventListener('mousedown', mapPinMainMouseDownHandler);
   mapPinsContainer.addEventListener('click', mapPinsContainerClickHandler);
-  mapPinsContainer.addEventListener('keydown', mapPinsContainerEnterHandler);
+  mapPinsContainer.addEventListener('keydown', mapPinsContainerEnterKeydownHandler);
 };
 
 var validateTitle = function () {
@@ -378,36 +378,42 @@ mapPinMain.addEventListener('mousedown', mapPinMainMouseDownHandler);
 mapPinMain.addEventListener('keydown', enterKeydownHandler);
 setInactivePageState();
 
-var mapPinsContainerClickHandler = function (evt) {
-  var clickedPin = evt.target.parentNode;
-  if (clickedPin.hasAttribute('id')) {
+var renderCard = function (clickedPin) {
+  var clickedId = parseInt(clickedPin.getAttribute('id'), 10);
+  mapFilters.appendChild(fillCard(adsList[clickedId]));
+};
+
+var openPopupOnClick = function (evt) {
+  var clickedPin = evt.target.classList.contains('map__pin--main') ? evt.target : evt.target.parentNode;
+  if ((!clickedPin.classList.contains('map__pin--main')) && (clickedPin.classList.contains('map__pin'))) {
     renderCard(clickedPin);
     removeClass(cardElement, 'hidden');
   }
 };
 
-var renderCard = function (clickedPin) {
-  var fragment = document.createDocumentFragment();
-  var clickedId = parseInt(clickedPin.getAttribute('id'), 10);
-  fragment.appendChild(fillCard(adsList[clickedId]));
-  mapFilters.appendChild(fragment);
-};
-
-var cardButtonCloseClickHandler = function () {
+var closePopupOnClick = function () {
   addClass(cardElement, 'hidden');
 };
 
-var cardButtonEscapeHandler = function (evt) {
+var mapPinsContainerClickHandler = function () {
+  openPopupOnClick();
+};
+
+var cardButtonCloseClickHandler = function () {
+  closePopupOnClick();
+};
+
+var escapeKeydownHandler = function (evt) {
   if (evt.key === ESC_KEY) {
-    cardButtonCloseClickHandler();
+    closePopupOnClick();
   }
 };
 
-var mapPinsContainerEnterHandler = function (evt) {
+var mapPinsContainerEnterKeydownHandler = function (evt) {
   if (evt.key === ENTER_KEY) {
-    mapPinsContainerClickHandler();
+    openPopupOnClick();
   }
 };
 
 cardButtonClose.addEventListener('click', cardButtonCloseClickHandler);
-document.addEventListener('keydown', cardButtonEscapeHandler);
+document.addEventListener('keydown', escapeKeydownHandler);

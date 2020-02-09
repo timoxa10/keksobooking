@@ -383,37 +383,38 @@ var renderCard = function (clickedPin) {
   mapFilters.appendChild(fillCard(adsList[clickedId]));
 };
 
-var openPopupOnClick = function (evt) {
+var openPopupCard = function (evt) {
   var clickedPin = evt.target.classList.contains('map__pin--main') ? evt.target : evt.target.parentNode;
   if ((!clickedPin.classList.contains('map__pin--main')) && (clickedPin.classList.contains('map__pin'))) {
     renderCard(clickedPin);
     removeClass(cardElement, 'hidden');
+    document.addEventListener('keydown', escapeKeydownHandler);
   }
 };
 
-var closePopupOnClick = function () {
+var closePopupCard = function () {
   addClass(cardElement, 'hidden');
 };
 
-var mapPinsContainerClickHandler = function () {
-  openPopupOnClick();
+var mapPinsContainerClickHandler = function (evt) {
+  openPopupCard(evt);
 };
 
 var cardButtonCloseClickHandler = function () {
-  closePopupOnClick();
+  closePopupCard();
 };
 
 var escapeKeydownHandler = function (evt) {
   if (evt.key === ESC_KEY) {
-    closePopupOnClick();
+    closePopupCard();
+    document.removeEventListener('keydown', escapeKeydownHandler);
   }
 };
 
 var mapPinsContainerEnterKeydownHandler = function (evt) {
   if (evt.key === ENTER_KEY) {
-    openPopupOnClick();
+    openPopupCard(evt);
   }
 };
 
 cardButtonClose.addEventListener('click', cardButtonCloseClickHandler);
-document.addEventListener('keydown', escapeKeydownHandler);

@@ -298,7 +298,6 @@ var setActivePageState = function () {
   mapPinMain.removeEventListener('keydown', enterKeydownHandler);
   mapPinMain.removeEventListener('mousedown', mapPinMainMouseDownHandler);
   mapPinsContainer.addEventListener('click', mapPinsContainerClickHandler);
-  // mapPinsContainer.addEventListener('keydown', mapPinsContainerEnterKeydownHandler);
 };
 
 var validateTitle = function () {

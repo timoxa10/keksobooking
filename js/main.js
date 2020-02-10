@@ -298,7 +298,7 @@ var setActivePageState = function () {
   mapPinMain.removeEventListener('keydown', enterKeydownHandler);
   mapPinMain.removeEventListener('mousedown', mapPinMainMouseDownHandler);
   mapPinsContainer.addEventListener('click', mapPinsContainerClickHandler);
-  mapPinsContainer.addEventListener('keydown', mapPinsContainerEnterKeydownHandler);
+  // mapPinsContainer.addEventListener('keydown', mapPinsContainerEnterKeydownHandler);
 };
 
 var validateTitle = function () {
@@ -384,7 +384,7 @@ var renderCard = function (clickedPin) {
 };
 
 var openPopupCard = function (evt) {
-  var clickedPin = evt.target.classList.contains('map__pin--main') ? evt.target : evt.target.parentNode;
+  var clickedPin = evt.target.classList.contains('map__pin') ? evt.target : evt.target.parentNode;
   if ((!clickedPin.classList.contains('map__pin--main')) && (clickedPin.classList.contains('map__pin'))) {
     renderCard(clickedPin);
     removeClass(cardElement, 'hidden');
@@ -408,12 +408,6 @@ var escapeKeydownHandler = function (evt) {
   if (evt.key === ESC_KEY) {
     closePopupCard();
     document.removeEventListener('keydown', escapeKeydownHandler);
-  }
-};
-
-var mapPinsContainerEnterKeydownHandler = function (evt) {
-  if (evt.key === ENTER_KEY) {
-    openPopupCard(evt);
   }
 };
 

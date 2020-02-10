@@ -393,6 +393,7 @@ var openPopupCard = function (evt) {
 
 var closePopupCard = function () {
   addClass(cardElement, 'hidden');
+  document.removeEventListener('keydown', escapeKeydownHandler);
 };
 
 var mapPinsContainerClickHandler = function (evt) {
@@ -406,7 +407,6 @@ var cardButtonCloseClickHandler = function () {
 var escapeKeydownHandler = function (evt) {
   if (evt.key === ESC_KEY) {
     closePopupCard();
-    document.removeEventListener('keydown', escapeKeydownHandler);
   }
 };
 

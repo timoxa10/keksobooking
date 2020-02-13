@@ -40,25 +40,29 @@
     min: 1,
     max: 8
   };
+  var getRandomNumberInRange = window.util.getRandomNumberInRange;
+  var getRandomItem = window.util.getRandomItem;
+  var getArrayWithRandomLength = window.util.getArrayWithRandomLength;
+
   var createObject = function (authorNumber) {
-    var cordsX = window.util.getRandomNumberInRange(PIN_COORDS.xCord.min, PIN_COORDS.xCord.max);
-    var cordsY = window.util.getRandomNumberInRange(PIN_COORDS.yCord.min, PIN_COORDS.yCord.max);
+    var cordsX = getRandomNumberInRange(PIN_COORDS.xCord.min, PIN_COORDS.xCord.max);
+    var cordsY = getRandomNumberInRange(PIN_COORDS.yCord.min, PIN_COORDS.yCord.max);
     return {
       author: {
         avatar: 'img/avatars/user0' + authorNumber + '.png'
       },
       offer: {
-        title: window.util.getRandomItem(BOOKING_TITLES),
+        title: getRandomItem(BOOKING_TITLES),
         address: cordsX + ', ' + cordsY,
-        price: window.util.getRandomNumberInRange(BOOKING_PRICE.min, BOOKING_PRICE.max),
-        type: window.util.getRandomItem(BOOKING_TYPES),
-        rooms: window.util.getRandomNumberInRange(BOOKING_ROOMS.min, BOOKING_ROOMS.max),
-        guests: window.util.getRandomNumberInRange(BOOKING_GUESTS.min, BOOKING_GUESTS.max),
-        checkin: window.util.getRandomItem(BOOKING_CHECKINS),
-        checkout: window.util.getRandomItem(BOOKING_CHECKOUTS),
-        features: window.util.getArrayWithRandomLength(BOOKING_FEATURES),
-        description: window.util.getRandomItem(BOOKING_DESCRIPTION),
-        photos: window.util.getArrayWithRandomLength(BOOKING_PHOTOS)
+        price: getRandomNumberInRange(BOOKING_PRICE.min, BOOKING_PRICE.max),
+        type: getRandomItem(BOOKING_TYPES),
+        rooms: getRandomNumberInRange(BOOKING_ROOMS.min, BOOKING_ROOMS.max),
+        guests: getRandomNumberInRange(BOOKING_GUESTS.min, BOOKING_GUESTS.max),
+        checkin: getRandomItem(BOOKING_CHECKINS),
+        checkout: getRandomItem(BOOKING_CHECKOUTS),
+        features: getArrayWithRandomLength(BOOKING_FEATURES),
+        description: getRandomItem(BOOKING_DESCRIPTION),
+        photos: getArrayWithRandomLength(BOOKING_PHOTOS)
       },
       location: {
         x: cordsX,
@@ -66,6 +70,7 @@
       }
     };
   };
+
   var generateAds = function (numberOfElements) {
     var generatedItems = [];
     for (var i = 0; i < numberOfElements; i++) {
@@ -73,6 +78,7 @@
     }
     return generatedItems;
   };
+
   window.data = {
     adsList: generateAds(NUMBER_OF_ADS)
   };

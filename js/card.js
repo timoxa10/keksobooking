@@ -18,6 +18,11 @@
   var generateLabelledList = window.util.generateLabelledList;
   var generateGalleryElements = window.util.generateGalleryElements;
   var normalizeGuestsEndings = window.util.normalizeGuestsEndings;
+  var mapPinMain = window.variableUtil.mapPinMain;
+  var ACTIVE_MAIN_PIN_WIDTH = 65;
+  var ACTIVE_MAIN_PIN_HEIGHT = 75;
+  var adForm = document.querySelector('.ad-form');
+  var addressField = adForm.querySelector('#address');
 
   var fillCard = function (cardItem) {
     cardElement.querySelector('.popup__avatar').src = cardItem.author.avatar;
@@ -60,11 +65,62 @@
     }
   };
 
+  var moveMapPinMain = function (evt) {
+    evt.preventDefault();
+
+    var startCoords = {
+      x: evt.clientX,
+      y: evt.clientY
+    };
+
+    var onMouseMove = function (moveEvt) {
+      moveEvt.preventDefault();
+
+      var shift = {
+        x: startCoords.x - moveEvt.clientX,
+        y: startCoords.y - moveEvt.clientY
+      };
+
+      startCoords = {
+        x: moveEvt.clientX,
+        y: moveEvt.clientY
+      };
+
+      var coordinates = {
+        left: mapPinMain.style.left = (mapPinMain.offsetLeft - shift.x) + 'px',
+        top: mapPinMain.style.top = (mapPinMain.offsetTop - shift.y) + 'px'
+      };
+
+      var coordinatesForForm = {
+        left: Math.floor(parseInt(coordinates.left, 10) + (ACTIVE_MAIN_PIN_WIDTH / 2)),
+        top: Math.floor(parseInt(coordinates.top, 10) + ACTIVE_MAIN_PIN_HEIGHT)
+      };
+
+      return addressField.setAttribute('value', coordinatesForForm.left + ', ' + coordinatesForForm.top);
+    };
+
+    var onMouseUp = function (upEvt) {
+      upEvt.preventDefault();
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  };
+
+  var mapPinMainMouseDownHandlerMove = function (evt) {
+    moveMapPinMain(evt);
+  };
+
+  mapPinMain.addEventListener('mousedown', mapPinMainMouseDownHandlerMove);
+
   window.card = {
     closeButton: cardButtonClose,
     fill: fillCard,
     render: renderCard,
     open: openCard,
-    close: closeCard
+    close: closeCard,
+    move: moveMapPinMain
   };
 })();

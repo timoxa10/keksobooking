@@ -34,7 +34,6 @@
     }
   };
 
-
   var fillCard = function (cardItem) {
     cardElement.querySelector('.popup__avatar').src = cardItem.author.avatar;
     cardElement.querySelector('.popup__title').textContent = cardItem.offer.title;
@@ -97,21 +96,23 @@
         y: moveEvt.clientY
       };
 
-      var dragged = ((mapPinMain.offsetLeft - shift.x <= PIN_COORDS.xCord.max) && (mapPinMain.offsetTop - shift.y >= PIN_COORDS.yCord.min && mapPinMain.offsetTop - shift.y <= PIN_COORDS.yCord.max));
+      var pinTop = parseInt(mapPinMain.style.top, 10) + ACTIVE_MAIN_PIN_HEIGHT - shift.y;
+      var pinLeft = parseInt(mapPinMain.style.left, 10) + Math.round(ACTIVE_MAIN_PIN_WIDTH / 2) - shift.x;
 
-      if (dragged) {
-        var coordinates = {
-          left: mapPinMain.style.left = (mapPinMain.offsetLeft - shift.x) + 'px',
-          top: mapPinMain.style.top = (mapPinMain.offsetTop - shift.y) + 'px'
-        };
-
-        var coordinatesForForm = {
-          left: Math.floor(parseInt(coordinates.left, 10) + (ACTIVE_MAIN_PIN_WIDTH / 2)),
-          top: Math.floor(parseInt(coordinates.top, 10) + ACTIVE_MAIN_PIN_HEIGHT)
-        };
+      if (pinTop >= PIN_COORDS.yCord.min && pinTop <= PIN_COORDS.yCord.max) {
+        mapPinMain.style.top = pinTop - ACTIVE_MAIN_PIN_HEIGHT + 'px';
+      } else {
+        pinTop += shift.y;
       }
 
-      return addressField.setAttribute('value', coordinatesForForm.left + ', ' + coordinatesForForm.top);
+      if (pinLeft >= PIN_COORDS.xCord.min && pinLeft <= PIN_COORDS.xCord.max) {
+        mapPinMain.style.left = pinLeft - ACTIVE_MAIN_PIN_WIDTH / 2 + 'px';
+      } else {
+        pinTop += shift.x;
+      }
+
+      addressField.setAttribute('value', pinLeft + ', ' + pinTop);
+
     };
 
     var onMouseUp = function (upEvt) {

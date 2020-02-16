@@ -23,6 +23,17 @@
   var ACTIVE_MAIN_PIN_HEIGHT = 75;
   var adForm = document.querySelector('.ad-form');
   var addressField = adForm.querySelector('#address');
+  var PIN_COORDS = {
+    xCord: {
+      min: 0,
+      max: 1200
+    },
+    yCord: {
+      min: 130,
+      max: 630
+    }
+  };
+
 
   var fillCard = function (cardItem) {
     cardElement.querySelector('.popup__avatar').src = cardItem.author.avatar;
@@ -86,15 +97,19 @@
         y: moveEvt.clientY
       };
 
-      var coordinates = {
-        left: mapPinMain.style.left = (mapPinMain.offsetLeft - shift.x) + 'px',
-        top: mapPinMain.style.top = (mapPinMain.offsetTop - shift.y) + 'px'
-      };
+      var dragged = ((mapPinMain.offsetLeft - shift.x <= PIN_COORDS.xCord.max) && (mapPinMain.offsetTop - shift.y >= PIN_COORDS.yCord.min && mapPinMain.offsetTop - shift.y <= PIN_COORDS.yCord.max));
 
-      var coordinatesForForm = {
-        left: Math.floor(parseInt(coordinates.left, 10) + (ACTIVE_MAIN_PIN_WIDTH / 2)),
-        top: Math.floor(parseInt(coordinates.top, 10) + ACTIVE_MAIN_PIN_HEIGHT)
-      };
+      if (dragged) {
+        var coordinates = {
+          left: mapPinMain.style.left = (mapPinMain.offsetLeft - shift.x) + 'px',
+          top: mapPinMain.style.top = (mapPinMain.offsetTop - shift.y) + 'px'
+        };
+
+        var coordinatesForForm = {
+          left: Math.floor(parseInt(coordinates.left, 10) + (ACTIVE_MAIN_PIN_WIDTH / 2)),
+          top: Math.floor(parseInt(coordinates.top, 10) + ACTIVE_MAIN_PIN_HEIGHT)
+        };
+      }
 
       return addressField.setAttribute('value', coordinatesForForm.left + ', ' + coordinatesForForm.top);
     };
@@ -107,6 +122,7 @@
 
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
+
   };
 
   var mapPinMainMouseDownHandlerMove = function (evt) {

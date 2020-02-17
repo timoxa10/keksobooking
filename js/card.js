@@ -108,7 +108,7 @@
       if (pinLeft >= PIN_COORDS.xCord.min && pinLeft <= PIN_COORDS.xCord.max) {
         mapPinMain.style.left = pinLeft - ACTIVE_MAIN_PIN_WIDTH / 2 + 'px';
       } else {
-        pinTop += shift.x;
+        pinLeft += shift.x;
       }
 
       addressField.setAttribute('value', pinLeft + ', ' + pinTop);

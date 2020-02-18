@@ -4,7 +4,6 @@
   var removeClass = window.util.removeClass;
   var map = window.variableUtil.map;
   var render = window.pin.render;
-  var adsList = window.data.adsList;
   var setActiveFieldsState = window.form.setActiveFieldsState;
   var setInactiveFieldsState = window.form.setInactiveFieldsState;
   var adForm = document.querySelector('.ad-form');
@@ -21,7 +20,7 @@
   var setActivePageState = function () {
     removeClass(map, 'map--faded');
     removeClass(adForm, 'ad-form--disabled');
-    render(adsList);
+    render();
     setActiveFieldsState(mapFiltersSelectLists);
     setActiveFieldsState(adFormFieldsets);
     mapFiltersFieldset.removeAttribute('disabled', '');

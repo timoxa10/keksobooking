@@ -11,7 +11,6 @@
     palace: 'Дворец'
   };
   var mapFilters = document.querySelector('.map__filters-container');
-  var adsList = window.data.adsList;
   var removeClass = window.util.removeClass;
   var addClass = window.util.addClass;
   var normalizeRoomsEndings = window.util.normalizeRoomsEndings;
@@ -52,7 +51,9 @@
 
   var renderCard = function (clickedPin) {
     var clickedId = parseInt(clickedPin.getAttribute('id'), 10);
-    mapFilters.appendChild(fillCard(adsList[clickedId]));
+    window.load(function (ads) {
+      mapFilters.appendChild(fillCard(ads[clickedId]));
+    });
   };
 
   var openCard = function (evt) {

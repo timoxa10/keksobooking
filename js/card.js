@@ -51,9 +51,7 @@
 
   var renderCard = function (clickedPin) {
     var clickedId = parseInt(clickedPin.getAttribute('id'), 10);
-    window.load(function (ads) {
-      mapFilters.appendChild(fillCard(ads[clickedId]));
-    });
+    mapFilters.appendChild(fillCard(window.pins[clickedId]));
   };
 
   var openCard = function (evt) {

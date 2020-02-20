@@ -35,7 +35,5 @@
     xhr.send();
   };
 
-  window.load = {
-    result: getServerData
-  };
+  window.load = getServerData;
 })();

@@ -3,8 +3,7 @@
 (function () {
   var removeClass = window.util.removeClass;
   var map = window.variableUtil.map;
-  var render = window.pin.render;
-  var receive = window.data.receive;
+  var receiveData = window.data.receive;
   var setActiveFieldsState = window.form.setActiveFieldsState;
   var setInactiveFieldsState = window.form.setInactiveFieldsState;
   var adForm = document.querySelector('.ad-form');
@@ -21,7 +20,7 @@
   var setActivePageState = function () {
     removeClass(map, 'map--faded');
     removeClass(adForm, 'ad-form--disabled');
-    render();
+    receiveData();
     setActiveFieldsState(mapFiltersSelectLists);
     setActiveFieldsState(adFormFieldsets);
     mapFiltersFieldset.removeAttribute('disabled', '');
@@ -64,10 +63,9 @@
   closeButton.addEventListener('click', cardButtonCloseClickHandler);
 
   setInactivePageState();
-  receive();
 
   window.state = {
-    isActive: setActivePageState,
-    isInactive: setInactivePageState
+    setActive: setActivePageState,
+    setInactive: setInactivePageState
   };
 })();

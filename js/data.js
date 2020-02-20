@@ -1,12 +1,16 @@
 'use strict';
 
 (function () {
+  var renderPins = window.pin.render;
+  var getServerData = window.load;
+
   var receiveData = function () {
-    window.load.result(successHandler, errorHandler);
+    getServerData(successHandler, errorHandler);
   };
 
   var successHandler = function (pins) {
     window.pins = pins;
+    renderPins(pins);
   };
 
   var errorHandler = function (errorMessage) {

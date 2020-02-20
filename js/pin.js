@@ -15,9 +15,9 @@
     return pinElement;
   };
 
-  var renderElements = function () {
+  var renderElements = function (elements) {
     var fragment = document.createDocumentFragment();
-    window.pins.slice(0, 5).forEach(function (ad, adId) {
+    elements.slice(0, 5).forEach(function (ad, adId) {
       fragment.appendChild(generateElement(ad, adId));
     });
     mapPinsContainer.appendChild(fragment);

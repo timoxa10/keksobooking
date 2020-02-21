@@ -1,28 +1,12 @@
 'use strict';
 
 (function () {
-  var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
-  var cardElement = cardTemplate.cloneNode(true);
-  var cardButtonClose = cardElement.querySelector('.popup__close');
   var ACCOMMODATION_TYPE = {
     flat: 'Квартира',
     house: 'Дом',
     bungalo: 'Бунгало',
     palace: 'Дворец'
   };
-  var mapFilters = document.querySelector('.map__filters-container');
-  var adsList = window.data.adsList;
-  var removeClass = window.util.removeClass;
-  var addClass = window.util.addClass;
-  var normalizeRoomsEndings = window.util.normalizeRoomsEndings;
-  var generateLabelledList = window.util.generateLabelledList;
-  var generateGalleryElements = window.util.generateGalleryElements;
-  var normalizeGuestsEndings = window.util.normalizeGuestsEndings;
-  var mapPinMain = window.variableUtil.mapPinMain;
-  var ACTIVE_MAIN_PIN_WIDTH = 65;
-  var ACTIVE_MAIN_PIN_HEIGHT = 75;
-  var adForm = document.querySelector('.ad-form');
-  var addressField = adForm.querySelector('#address');
   var PIN_COORDS = {
     xCord: {
       min: 0,
@@ -33,6 +17,22 @@
       max: 630
     }
   };
+  var ACTIVE_MAIN_PIN_WIDTH = 65;
+  var ACTIVE_MAIN_PIN_HEIGHT = 75;
+
+  var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
+  var cardElement = cardTemplate.cloneNode(true);
+  var cardButtonClose = cardElement.querySelector('.popup__close');
+  var mapFilters = document.querySelector('.map__filters-container');
+  var removeClass = window.util.removeClass;
+  var addClass = window.util.addClass;
+  var normalizeRoomsEndings = window.util.normalizeRoomsEndings;
+  var generateLabelledList = window.util.generateLabelledList;
+  var generateGalleryElements = window.util.generateGalleryElements;
+  var normalizeGuestsEndings = window.util.normalizeGuestsEndings;
+  var mapPinMain = window.variableUtil.mapPinMain;
+  var adForm = document.querySelector('.ad-form');
+  var addressField = adForm.querySelector('#address');
 
   var fillCard = function (cardItem) {
     cardElement.querySelector('.popup__avatar').src = cardItem.author.avatar;
@@ -52,7 +52,7 @@
 
   var renderCard = function (clickedPin) {
     var clickedId = parseInt(clickedPin.getAttribute('id'), 10);
-    mapFilters.appendChild(fillCard(adsList[clickedId]));
+    mapFilters.appendChild(fillCard(window.pins[clickedId]));
   };
 
   var openCard = function (evt) {

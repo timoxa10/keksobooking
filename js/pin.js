@@ -17,7 +17,7 @@
 
   var renderElements = function (elements) {
     var fragment = document.createDocumentFragment();
-    elements.forEach(function (ad, adId) {
+    elements.slice(0, 5).forEach(function (ad, adId) {
       fragment.appendChild(generateElement(ad, adId));
     });
     mapPinsContainer.appendChild(fragment);

@@ -21,6 +21,7 @@
   var roomsField = adForm.querySelector('#room_number');
   var guestsField = adForm.querySelector('#capacity');
   var typeOfHousingField = adForm.querySelector('#type');
+  var resetField = adForm.querySelector('.ad-form__reset');
   var mapPinMain = window.variableUtil.mapPinMain;
   var roomsCapacityMap = {
     '1': {
@@ -40,6 +41,13 @@
       'errorText': '100 комнат не для гостей'
     },
   };
+  var mapFilters = document.querySelector('.map__filters-container');
+  var mapFiltersSelectLists = mapFilters.querySelectorAll('select');
+  var mapFiltersFieldset = mapFilters.querySelector('.map__features');
+  var adFormFieldsets = adForm.querySelectorAll('fieldset');
+  var addClass = window.util.addClass;
+  var map = window.variableUtil.map;
+  var successDataHandler = window.upload;
 
   var setInactiveFieldsState = function (elements) {
     return elements.forEach(function (item) {
@@ -129,6 +137,79 @@
     validateRoomsNumbers();
   };
 
+  var resetForm = function (form) {
+    form.reset();
+  };
+
+  var resetFieldResetHandler = function () {
+    resetForm(resetField);
+  };
+
+  var mainContainer = document.querySelector('main');
+  var successTemplate = document.querySelector('#success').content.querySelector('.success');
+  var successNode = successTemplate.cloneNode(true);
+
+  var errorTemplate = document.querySelector('#error').content.querySelector('.error');
+  var errorNode = errorTemplate.cloneNode(true);
+
+  var sendFormData = function (evt) {
+    successDataHandler(new FormData(adForm), function () {
+      resetForm(adForm);
+      setInactivePageState();
+      addClass(map, 'map--faded');
+      addClass(adForm, 'ad-form--disabled');
+      mainContainer.appendChild(successNode);
+      document.addEventListener('keydown', successNodeKeydownHandler);
+      document.addEventListener('click', successNodeClickHandler);
+    }, errorDataHandler);
+    evt.preventDefault();
+  };
+
+  var errorDataHandler = function () {
+    mainContainer.appendChild(errorNode);
+    document.addEventListener('keydown', errorNodeKeydownHandler);
+    document.addEventListener('click', errorNodeClickHandler);
+  };
+
+  var successNodeKeydownHandler = function () {
+    if (window.dialogUtil.isEscPressed) {
+      addClass(successNode, 'hidden');
+    }
+  };
+
+  var errorNodeKeydownHandler = function () {
+    if (window.dialogUtil.isEscPressed) {
+      addClass(errorNode, 'hidden');
+    }
+  };
+
+  var successNodeClickHandler = function (evt) {
+    var clickedArea = evt.target;
+    if (clickedArea.classList.contains('success') || clickedArea.classList.contains('success__message')) {
+      addClass(successNode, 'hidden');
+    }
+  };
+
+  var errorNodeClickHandler = function (evt) {
+    var clickedArea = evt.target;
+    if (clickedArea.classList.contains('error') || clickedArea.classList.contains('error__message') || clickedArea.classList.contains('error__button')) {
+      addClass(errorNode, 'hidden');
+    }
+  };
+
+  var setInactivePageState = function () {
+    addClass(map, 'map--faded');
+    addClass(adForm, 'ad-form--disabled');
+    setInactiveFieldsState(mapFiltersSelectLists);
+    setInactiveFieldsState(adFormFieldsets);
+    mapFiltersFieldset.setAttribute('disabled', '');
+    getMapPinMainDefaultCoords();
+  };
+
+  var adFormSubmitHandler = function (evt) {
+    sendFormData(evt);
+  };
+
   headlineField.addEventListener('input', headlineFieldInputHandler);
   pricePerNightField.addEventListener('input', pricePerNightFieldInputHandler);
   roomsField.addEventListener('change', roomsFieldChangeHandler);
@@ -136,6 +217,8 @@
   checkinField.addEventListener('change', checkinChangeHandler);
   checkoutField.addEventListener('change', checkoutChangeHandler);
   typeOfHousingField.addEventListener('change', typeOfHousingFieldChangeHandler);
+  resetField.addEventListener('change', resetFieldResetHandler);
+  adForm.addEventListener('submit', adFormSubmitHandler);
 
   window.form = {
     setInactiveFieldsState: setInactiveFieldsState,

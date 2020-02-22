@@ -2,6 +2,7 @@
 
 (function () {
   var removeClass = window.util.removeClass;
+  var addClass = window.util.addClass;
   var map = window.variableUtil.map;
   var receiveData = window.data.receive;
   var setActiveFieldsState = window.form.setActiveFieldsState;
@@ -12,10 +13,12 @@
   var mapFiltersSelectLists = mapFilters.querySelectorAll('select');
   var mapFiltersFieldset = mapFilters.querySelector('.map__features');
   var getMapPinMainActivatedCoords = window.form.getMapPinMainActivatedCoords;
-  var getMapPinMainDefaultCoords = window.form.getMapPinMainDefaultCoords;
+  var setMapPinMainDefaultCoords = window.form.setMapPinMainDefaultCoords;
   var mapPinMain = window.variableUtil.mapPinMain;
   var mapPinsContainer = window.variableUtil.mapPinsContainer;
   var closeButton = window.card.closeButton;
+  var removePins = window.pin.remove;
+  var resetData = window.form.resetData;
 
   var setActivePageState = function () {
     removeClass(map, 'map--faded');
@@ -31,10 +34,18 @@
   };
 
   var setInactivePageState = function () {
+    addClass(map, 'map--faded');
+    addClass(adForm, 'ad-form--disabled');
     setInactiveFieldsState(mapFiltersSelectLists);
     setInactiveFieldsState(adFormFieldsets);
     mapFiltersFieldset.setAttribute('disabled', '');
-    getMapPinMainDefaultCoords();
+    setMapPinMainDefaultCoords();
+    mapPinMain.addEventListener('mousedown', mapPinMainMouseDownHandler);
+    mapPinMain.addEventListener('keydown', enterKeydownHandler);
+    resetData(adForm);
+    if (window.mapPins !== undefined) {
+      removePins(window.mapPins);
+    }
   };
 
 
@@ -58,8 +69,6 @@
     window.card.close();
   };
 
-  mapPinMain.addEventListener('mousedown', mapPinMainMouseDownHandler);
-  mapPinMain.addEventListener('keydown', enterKeydownHandler);
   closeButton.addEventListener('click', cardButtonCloseClickHandler);
 
   setInactivePageState();

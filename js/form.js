@@ -12,6 +12,10 @@
     house: 5000,
     palace: 10000
   };
+  var DEFAULT_COORDINATES = {
+    left: '570px',
+    top: '375px'
+  };
   var adForm = document.querySelector('.ad-form');
   var addressField = adForm.querySelector('#address');
   var headlineField = adForm.querySelector('#title');
@@ -21,6 +25,7 @@
   var roomsField = adForm.querySelector('#room_number');
   var guestsField = adForm.querySelector('#capacity');
   var typeOfHousingField = adForm.querySelector('#type');
+  var resetField = adForm.querySelector('.ad-form__reset');
   var mapPinMain = window.variableUtil.mapPinMain;
   var roomsCapacityMap = {
     '1': {
@@ -40,6 +45,12 @@
       'errorText': '100 комнат не для гостей'
     },
   };
+  var successHandler = window.backend.send;
+  var mainContainer = document.querySelector('main');
+  var successTemplate = document.querySelector('#success').content.querySelector('.success');
+  var successNode = successTemplate.cloneNode(true);
+  var errorTemplate = document.querySelector('#error').content.querySelector('.error');
+  var errorNode = errorTemplate.cloneNode(true);
 
   var setInactiveFieldsState = function (elements) {
     return elements.forEach(function (item) {
@@ -53,11 +64,14 @@
     });
   };
 
-  var getMapPinMainDefaultCoords = function () {
+  var setMapPinMainDefaultCoords = function () {
+    mapPinMain.style.left = DEFAULT_COORDINATES.left;
+    mapPinMain.style.top = DEFAULT_COORDINATES.top;
     var coordinates = {
-      left: Math.floor(parseInt(mapPinMain.style.left, 10) + (INACTIVE_MAIN_PIN_WIDTH / 2)),
-      top: Math.floor(parseInt(mapPinMain.style.top, 10) + (INACTIVE_MAIN_PIN_HEIGHT / 2))
+      left: Math.floor(parseInt(DEFAULT_COORDINATES.left, 10) + (INACTIVE_MAIN_PIN_WIDTH / 2)),
+      top: Math.floor(parseInt(DEFAULT_COORDINATES.top, 10) + (INACTIVE_MAIN_PIN_HEIGHT / 2))
     };
+
     return addressField.setAttribute('value', coordinates.left + ', ' + coordinates.top);
   };
 
@@ -129,6 +143,60 @@
     validateRoomsNumbers();
   };
 
+  var resetData = function (form) {
+    form.reset();
+  };
+
+  var resetFieldResetHandler = function () {
+    resetData(resetField);
+  };
+
+  var sendFormData = function (evt) {
+    successHandler(new FormData(adForm), function () {
+      mainContainer.appendChild(successNode);
+      window.state.setInactive();
+      document.addEventListener('keydown', successNodeKeydownHandler);
+      document.addEventListener('click', successNodeClickHandler);
+    }, errorHandler);
+    evt.preventDefault();
+  };
+
+  var errorHandler = function () {
+    mainContainer.appendChild(errorNode);
+    document.addEventListener('keydown', errorNodeKeydownHandler);
+    document.addEventListener('click', errorNodeClickHandler);
+  };
+
+  var successNodeKeydownHandler = function () {
+    if (window.dialogUtil.isEscPressed) {
+      successNode.remove();
+    }
+  };
+
+  var errorNodeKeydownHandler = function () {
+    if (window.dialogUtil.isEscPressed) {
+      errorNode.remove();
+    }
+  };
+
+  var successNodeClickHandler = function (evt) {
+    var clickedArea = evt.target;
+    if (clickedArea.classList.contains('success') || clickedArea.classList.contains('success__message')) {
+      successNode.remove();
+    }
+  };
+
+  var errorNodeClickHandler = function (evt) {
+    var clickedArea = evt.target;
+    if (clickedArea.classList.contains('error') || clickedArea.classList.contains('error__message') || clickedArea.classList.contains('error__button')) {
+      errorNode.remove();
+    }
+  };
+
+  var adFormSubmitHandler = function (evt) {
+    sendFormData(evt);
+  };
+
   headlineField.addEventListener('input', headlineFieldInputHandler);
   pricePerNightField.addEventListener('input', pricePerNightFieldInputHandler);
   roomsField.addEventListener('change', roomsFieldChangeHandler);
@@ -136,17 +204,20 @@
   checkinField.addEventListener('change', checkinChangeHandler);
   checkoutField.addEventListener('change', checkoutChangeHandler);
   typeOfHousingField.addEventListener('change', typeOfHousingFieldChangeHandler);
+  resetField.addEventListener('change', resetFieldResetHandler);
+  adForm.addEventListener('submit', adFormSubmitHandler);
 
   window.form = {
     setInactiveFieldsState: setInactiveFieldsState,
     setActiveFieldsState: setActiveFieldsState,
-    getMapPinMainDefaultCoords: getMapPinMainDefaultCoords,
+    setMapPinMainDefaultCoords: setMapPinMainDefaultCoords,
     getMapPinMainActivatedCoords: getMapPinMainActivatedCoords,
     validateTitle: validateTitle,
     validatePrice: validatePrice,
     validateRoomsNumbers: validateRoomsNumbers,
     typeOfHousingFieldChangeHandler: typeOfHousingFieldChangeHandler,
     checkinChangeHandler: checkinChangeHandler,
-    checkoutChangeHandler: checkoutChangeHandler
+    checkoutChangeHandler: checkoutChangeHandler,
+    resetData: resetData
   };
 })();

@@ -4,6 +4,7 @@
   var PIN_WIDTH = 50;
   var PIN_HEIGHT = 70;
   var mapPinsContainer = window.variableUtil.mapPinsContainer;
+  var map = document.querySelector('.map');
 
   var generateElement = function (ad, adId) {
     var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
@@ -21,10 +22,18 @@
       fragment.appendChild(generateElement(ad, adId));
     });
     mapPinsContainer.appendChild(fragment);
+    window.mapPins = map.querySelectorAll('button[type="button"]');
+  };
+
+  var removePins = function (pins) {
+    return pins.forEach(function (item) {
+      item.remove();
+    });
   };
 
   window.pin = {
     generate: generateElement,
-    render: renderElements
+    render: renderElements,
+    remove: removePins
   };
 })();

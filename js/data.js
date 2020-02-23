@@ -2,15 +2,15 @@
 
 (function () {
   var renderPins = window.pin.render;
-  var getServerData = window.load;
+  var getServerData = window.backend.get;
 
   var receiveData = function () {
     getServerData(successHandler, errorHandler);
   };
 
-  var successHandler = function (pins) {
-    window.pins = pins;
-    renderPins(pins);
+  var successHandler = function (ads) {
+    window.ads = ads;
+    renderPins(window.ads);
   };
 
   var errorHandler = function (errorMessage) {

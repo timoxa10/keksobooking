@@ -52,7 +52,7 @@
 
   var renderCard = function (clickedPin) {
     var clickedId = parseInt(clickedPin.getAttribute('id'), 10);
-    mapFilters.appendChild(fillCard(window.pins[clickedId]));
+    mapFilters.appendChild(fillCard(window.ads[clickedId]));
   };
 
   var openCard = function (evt) {

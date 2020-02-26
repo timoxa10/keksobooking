@@ -9,7 +9,9 @@
   };
 
   var successHandler = function (ads) {
-    window.ads = ads;
+    window.ads = ads.map(function (ad, index) {
+      return Object.assign({}, ad, {id: index});
+    });
     renderPins(window.ads);
   };
 

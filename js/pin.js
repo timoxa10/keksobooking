@@ -18,8 +18,8 @@
 
   var renderElements = function (elements) {
     var fragment = document.createDocumentFragment();
-    elements.slice(0, 5).forEach(function (ad, adId) {
-      fragment.appendChild(generateElement(ad, adId));
+    elements.slice(0, 5).forEach(function (ad) {
+      fragment.appendChild(generateElement(ad, ad.id));
     });
     mapPinsContainer.appendChild(fragment);
     window.mapPins = map.querySelectorAll('button[type="button"]');

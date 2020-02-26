@@ -1,23 +1,26 @@
 'use strict';
 
 (function () {
-  var housingTypeFilter = document.querySelector('#housing-type');
+  var mapFilters = document.querySelector('.map__filters-container');
+  var mapFiltersForm = mapFilters.querySelector('.map__filters');
   var renderPins = window.pin.render;
   var removePins = window.pin.remove;
-  var housingType;
 
-  var housingTypeChangeHandler = function (evt) {
-    housingType = evt.target.value;
-    updatePins(housingType);
+  var mapFiltersFormChangeHandler = function () {
+    updatePins();
   };
 
   var updatePins = function () {
     window.card.close();
     removePins(window.mapPins);
+    var housingType = document.querySelector('#housing-type').value;
     renderPins(window.ads.filter(function (ad) {
+      if (housingType === 'any') {
+        return true;
+      }
       return ad.offer.type === housingType;
     }));
   };
 
-  housingTypeFilter.addEventListener('change', housingTypeChangeHandler);
+  mapFiltersForm.addEventListener('change', mapFiltersFormChangeHandler);
 })();

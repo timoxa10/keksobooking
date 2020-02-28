@@ -18,13 +18,9 @@
     var housingPrice = document.querySelector('#housing-price').value;
     var housingRooms = document.querySelector('#housing-rooms').value;
     var housingGuests = document.querySelector('#housing-guests').value;
-    var housingFeatures = document.querySelectorAll('#housing-features input');
-    var checkedValue = null;
-    for (var i = 0; i < housingFeatures.length; i++) {
-      if (housingFeatures[i].checked) {
-        checkedValue = housingFeatures[i].value;
-      }
-    }
+    var selectedFeatures = Array.from(document.querySelectorAll('.map__checkbox:checked')).map(function (checkbox) {
+      return checkbox.value;
+    });
 
     renderPins(window.ads
       .filter(function (ad) {
@@ -57,11 +53,10 @@
         }
         return ad.offer.guests === Number(housingGuests);
       })
-      .filter(function (ad) {
-        if (!checkedValue) {
-          return true;
-        }
-        return ad.offer.features.includes(checkedValue);
+      .filter(function (element) {
+        return selectedFeatures.every(function (feature) {
+          return element.offer.features.includes(feature);
+        });
       })
     );
   };

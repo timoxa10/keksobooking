@@ -7,7 +7,7 @@
   var removePins = window.pin.remove;
 
   var mapFiltersFormChangeHandler = function () {
-    window.debounce.call(updatePins());
+    window.debounce.call(updatePins)();
   };
 
   var updatePins = function () {

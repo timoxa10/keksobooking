@@ -19,6 +19,7 @@
   var closeButton = window.card.closeButton;
   var removePins = window.pin.remove;
   var resetData = window.form.resetData;
+  var mapPreview = document.querySelector('.ad-form-header__preview img');
 
   var setActivePageState = function () {
     removeClass(map, 'map--faded');
@@ -45,6 +46,9 @@
     resetData(adForm);
     if (window.mapPins !== undefined) {
       removePins(window.mapPins);
+    }
+    if (!(mapPreview.src.indexOf('img/muffin-grey.svg') > -1)) {
+      window.avatar.resetMapPreview();
     }
   };
 

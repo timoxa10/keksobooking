@@ -7,7 +7,7 @@
   var mapPreview = document.querySelector('.ad-form-header__preview img');
   var fileHousingChooser = document.querySelector('.ad-form__input');
   var housingPreview = document.querySelector('.ad-form__photo');
-  var housingPreviews = document.querySelectorAll('.ad-form__photo');
+  var inputUpload = document.querySelector('.ad-form__upload');
   var addClass = window.util.addClass;
 
   var uploadHousingImage = function () {
@@ -21,19 +21,15 @@
     if (matches) {
       var reader = new FileReader();
       reader.addEventListener('load', function () {
-        var imageContainer = document.createElement('img');
-        imageContainer.setAttribute('src', housingPreview.src = reader.result);
-        imageContainer.setAttribute('width', '70');
-        imageContainer.setAttribute('height', '70');
-        housingPreview.appendChild(imageContainer);
-        if (housingPreview.children.length >= 2) {
-          for (var i = 1; i < housingPreview.children.length; i++) {
-            var housingPreviewClone = document.createElement('div');
-            addClass(housingPreviewClone, 'ad-form__photo');
-            housingPreviewClone.appendChild(housingPreview.children[i]);
-            housingPreview.insertAdjacentElement('afterend', housingPreviewClone);
-          }
-        }
+        housingPreview.remove();
+        var imageNode = document.createElement('img');
+        var divNode = document.createElement('div');
+        addClass(divNode, 'ad-form__photo');
+        imageNode.setAttribute('src', divNode.src = reader.result);
+        imageNode.setAttribute('width', '70');
+        imageNode.setAttribute('height', '70');
+        divNode.appendChild(imageNode);
+        inputUpload.insertAdjacentElement('afterend', divNode);
       });
       reader.readAsDataURL(file);
     }
@@ -72,12 +68,13 @@
   };
 
   var resetHousingPreview = function () {
-    housingPreviews[0].firstElementChild.remove();
-    if (housingPreviews.length >= 2) {
-      for (var i = 1; i < housingPreviews.length; i++) {
-        housingPreviews[i].remove();
-      }
+    var housingPreviews = document.querySelectorAll('.ad-form__photo');
+    for (var i = 0; i < housingPreviews.length; i++) {
+      housingPreviews[i].remove();
     }
+    var divNode = document.createElement('div');
+    addClass(divNode, 'ad-form__photo');
+    inputUpload.insertAdjacentElement('afterend', divNode);
   };
 
   fileHousingChooser.addEventListener('change', fileHousingChooserChangeHandler);

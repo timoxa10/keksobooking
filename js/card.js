@@ -33,6 +33,7 @@
   var mapPinMain = window.variableUtil.mapPinMain;
   var adForm = document.querySelector('.ad-form');
   var addressField = adForm.querySelector('#address');
+  var resetActivePin = window.pin.reset;
 
   var fillCard = function (cardItem) {
     cardElement.querySelector('.popup__avatar').src = cardItem.author.avatar;
@@ -61,17 +62,22 @@
       renderCard(clickedPin);
       removeClass(cardElement, 'hidden');
       document.addEventListener('keydown', escapeKeydownHandler);
+      resetActivePin();
+      clickedPin.classList.add('map__pin--active');
     }
   };
 
   var closeCard = function () {
     addClass(cardElement, 'hidden');
     document.removeEventListener('keydown', escapeKeydownHandler);
+    addClass(cardElement, 'hidden');
+    resetActivePin();
   };
 
   var escapeKeydownHandler = function () {
     if (window.dialogUtil.isEscPressed) {
       closeCard();
+      resetActivePin();
     }
   };
 

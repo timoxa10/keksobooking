@@ -143,12 +143,17 @@
     validateRoomsNumbers();
   };
 
-  var resetData = function (form) {
-    form.reset();
+  var resetData = function (field) {
+    field.reset();
   };
 
-  var resetFieldResetHandler = function () {
+  var resetFieldChangeHandler = function () {
     resetData(resetField);
+  };
+
+  var resetFieldClickHandler = function () {
+    window.avatar.resetMapPreview();
+    window.avatar.resetHousingPreview();
   };
 
   var sendFormData = function (evt) {
@@ -204,7 +209,8 @@
   checkinField.addEventListener('change', checkinChangeHandler);
   checkoutField.addEventListener('change', checkoutChangeHandler);
   typeOfHousingField.addEventListener('change', typeOfHousingFieldChangeHandler);
-  resetField.addEventListener('change', resetFieldResetHandler);
+  resetField.addEventListener('change', resetFieldChangeHandler);
+  resetField.addEventListener('click', resetFieldClickHandler);
   adForm.addEventListener('submit', adFormSubmitHandler);
 
   window.form = {

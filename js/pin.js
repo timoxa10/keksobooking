@@ -31,9 +31,17 @@
     });
   };
 
+  var resetActivePin = function () {
+    var lastClickedPin = document.querySelector('.map__pin--active');
+    if (lastClickedPin) {
+      lastClickedPin.classList.remove('map__pin--active');
+    }
+  };
+
   window.pin = {
     generate: generateElement,
     render: renderElements,
-    remove: removePins
+    remove: removePins,
+    reset: resetActivePin
   };
 })();

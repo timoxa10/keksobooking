@@ -70,8 +70,7 @@
   var resetHousingPreview = function () {
     var housingPreviews = document.querySelectorAll('.ad-form__photo');
     if (housingPreviews[0].hasChildNodes()) {
-      housingPreviews[0].firstChild.remove();
-      for (var i = 1; i < housingPreviews.length; i++) {
+      for (var i = 0; i < housingPreviews.length; i++) {
         housingPreviews[i].remove();
       }
     }

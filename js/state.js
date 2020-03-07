@@ -20,7 +20,6 @@
   var removePins = window.pin.remove;
   var resetData = window.form.resetData;
   var mapPreview = document.querySelector('.ad-form-header__preview img');
-  var housingPreview = document.querySelector('.ad-form__photo');
 
   var setActivePageState = function () {
     removeClass(map, 'map--faded');
@@ -36,6 +35,7 @@
   };
 
   var setInactivePageState = function () {
+    var housingPreview = document.querySelector('.ad-form__photo');
     addClass(map, 'map--faded');
     addClass(adForm, 'ad-form--disabled');
     setInactiveFieldsState(mapFiltersSelectLists);
@@ -48,10 +48,10 @@
     if (window.mapPins !== undefined) {
       removePins(window.mapPins);
     }
-    if (!(mapPreview.src.indexOf('img/muffin-grey.svg') > -1)) {
+    if (!mapPreview.src.includes('img/muffin-grey.svg')) {
       window.avatar.resetMapPreview();
     }
-    if (housingPreview.hasChildNodes()) {
+    if (housingPreview.hasChildNodes() && housingPreview !== null) {
       window.avatar.resetHousingPreview();
     }
   };

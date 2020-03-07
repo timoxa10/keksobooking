@@ -69,12 +69,11 @@
 
   var resetHousingPreview = function () {
     var housingPreviews = document.querySelectorAll('.ad-form__photo');
-    for (var i = 0; i < housingPreviews.length; i++) {
-      housingPreviews[i].remove();
+    if (housingPreviews[0].hasChildNodes()) {
+      for (var i = 0; i < housingPreviews.length; i++) {
+        housingPreviews[i].remove();
+      }
     }
-    var divNode = document.createElement('div');
-    addClass(divNode, 'ad-form__photo');
-    inputUpload.insertAdjacentElement('afterend', divNode);
   };
 
   fileHousingChooser.addEventListener('change', fileHousingChooserChangeHandler);

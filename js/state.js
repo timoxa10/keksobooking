@@ -21,8 +21,6 @@
   var resetData = window.form.resetData;
   var mapPreview = document.querySelector('.ad-form-header__preview img');
   var housingPreview = document.querySelector('.ad-form__photo');
-  var resetMapPreview = window.avatar.resetMapPreview;
-  var resetHousingPreview = window.avatar.resetHousingPreview;
 
   var setActivePageState = function () {
     removeClass(map, 'map--faded');
@@ -51,10 +49,10 @@
       removePins(window.mapPins);
     }
     if (!(mapPreview.src.indexOf('img/muffin-grey.svg') > -1)) {
-      resetMapPreview();
+      window.avatar.resetMapPreview();
     }
     if (housingPreview.hasChildNodes()) {
-      resetHousingPreview();
+      window.avatar.resetHousingPreview();
     }
   };
 

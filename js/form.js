@@ -152,6 +152,7 @@
   };
 
   var resetFieldClickHandler = function () {
+    window.state.setInactive();
     window.avatar.resetMapPreview();
     window.avatar.resetHousingPreview();
   };

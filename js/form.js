@@ -151,10 +151,16 @@
     resetData(resetField);
   };
 
+  var setDefaultPriceFieldAttributes = function () {
+    pricePerNightField.setAttribute('min', HOUSING_PRICES['flat']);
+    pricePerNightField.setAttribute('placeholder', HOUSING_PRICES['flat']);
+  };
+
   var resetFieldClickHandler = function () {
     window.state.setInactive();
     window.avatar.resetMapPreview();
     window.avatar.resetHousingPreview();
+    setDefaultPriceFieldAttributes();
   };
 
   var sendFormData = function (evt) {

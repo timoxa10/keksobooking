@@ -51,7 +51,7 @@
     if (!mapPreview.src.includes('img/muffin-grey.svg')) {
       window.avatar.resetMapPreview();
     }
-    if (housingPreview.hasChildNodes() && housingPreview !== null) {
+    if (housingPreview && housingPreview.hasChildNodes()) {
       window.avatar.resetHousingPreview();
     }
   };

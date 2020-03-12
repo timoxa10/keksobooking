@@ -20,6 +20,7 @@
   var removePins = window.pin.remove;
   var resetData = window.form.resetData;
   var mapPreview = document.querySelector('.ad-form-header__preview img');
+  var setDefaultPriceFieldAttributes = window.form.setDefaultPriceFieldAttributes;
 
   var setActivePageState = function () {
     removeClass(map, 'map--faded');
@@ -42,6 +43,7 @@
     setInactiveFieldsState(adFormFieldsets);
     mapFiltersFieldset.setAttribute('disabled', '');
     setMapPinMainDefaultCoords();
+    setDefaultPriceFieldAttributes();
     mapPinMain.addEventListener('mousedown', mapPinMainMouseDownHandler);
     mapPinMain.addEventListener('keydown', enterKeydownHandler);
     resetData(adForm);

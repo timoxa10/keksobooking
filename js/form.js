@@ -160,7 +160,6 @@
     window.state.setInactive();
     window.avatar.resetMapPreview();
     window.avatar.resetHousingPreview();
-    setDefaultPriceFieldAttributes();
   };
 
   var sendFormData = function (evt) {
@@ -231,6 +230,7 @@
     typeOfHousingFieldChangeHandler: typeOfHousingFieldChangeHandler,
     checkinChangeHandler: checkinChangeHandler,
     checkoutChangeHandler: checkoutChangeHandler,
-    resetData: resetData
+    resetData: resetData,
+    setDefaultPriceFieldAttributes: setDefaultPriceFieldAttributes
   };
 })();

@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var URL = 'https://js.dump.academy/keksobooking';
+  var URL = 'https://javascript.pages.academy/keksobooking';
   var TIMEOUT_IN_MS = 10000;
   var StatusCode = {
     OK: 200
